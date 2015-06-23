@@ -1,13 +1,18 @@
 package ccBooleanAnalysis;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.swing.JFileChooser;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,6 +24,8 @@ public class StateTransitionGraph {
 	private static ArrayList<String> expressionString = new ArrayList<String>();
 	private static JSONArray dataArray = new JSONArray();
 	private static int dataSize, totalSize;
+	
+	
 
 	//total number of species including external species.
 	private static void initializeSpecies(){
@@ -83,7 +90,7 @@ public class StateTransitionGraph {
 	}
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
 		JFileChooser fileChooser = new JFileChooser();
@@ -94,6 +101,9 @@ public class StateTransitionGraph {
 
 		// Get the file from the file 
 		File file = fileChooser.getSelectedFile();
+		
+		PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
+		System.setOut(out);
 
 		//solves boolean expression
 		ScriptEngineManager factory = new ScriptEngineManager();
@@ -143,7 +153,7 @@ public class StateTransitionGraph {
 					count++;
 					answer = "";
 
-					System.out.print(state + " ");
+					System.out.print(state + " => ");
 
 					for (int j = 0; j < dataSize; j++) {
 
