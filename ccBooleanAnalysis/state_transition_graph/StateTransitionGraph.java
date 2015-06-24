@@ -2,9 +2,7 @@ package ccBooleanAnalysis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,16 +16,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class StateTransitionGraph {
+	
+	private static JSONObject transitionStates = new JSONObject();
+	private static JSONObject graph = new JSONObject();
 
-	//total input species in the data
-	private static ArrayList<String> totalSpecies = new ArrayList<String>();
+	private static JSONArray components = new JSONArray();
+	private static JSONObject transitions = new JSONObject();
+	
 	private static ArrayList<String> expressionString = new ArrayList<String>();
 	private static JSONArray dataArray = new JSONArray();
 	private static int dataSize, totalSize;
 	
-	
-
 	//total number of species including external species.
+	@SuppressWarnings("unchecked")
 	private static void initializeSpecies(){
 
 		JSONObject object;
@@ -39,8 +40,8 @@ public class StateTransitionGraph {
 			object = (JSONObject)dataArray.get(i);
 			species = (String) object.get("species");
 
-			if(!totalSpecies.contains(species)){
-				totalSpecies.add(species);
+			if(!components.contains(species)){
+				components.add(species);
 			}
 		}
 
@@ -53,17 +54,18 @@ public class StateTransitionGraph {
 
 				species = (String)speciesArray.get(j);
 
-				if(!totalSpecies.contains(species)){
-					totalSpecies.add(species);
+				if(!components.contains(species)){
+					components.add(species);
 				}	
 			}
 		}
-		totalSize = totalSpecies.size();
-		System.out.println(totalSize + " " + totalSpecies);
+		transitionStates.put("components", components);
+		graph.put("metadata", components);
+		totalSize = components.size();
 	}
 
 	//binary value of a number
-	private static String generateBinary(int state){
+	public static String generateBinary(int state){
 
 		String str = Integer.toBinaryString(state);
 
@@ -90,6 +92,7 @@ public class StateTransitionGraph {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
@@ -101,9 +104,6 @@ public class StateTransitionGraph {
 
 		// Get the file from the file 
 		File file = fileChooser.getSelectedFile();
-		
-		PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
-		System.setOut(out);
 
 		//solves boolean expression
 		ScriptEngineManager factory = new ScriptEngineManager();
@@ -123,8 +123,6 @@ public class StateTransitionGraph {
 			//time of computation in milliseconds
 			long startTime = System.currentTimeMillis();
 
-			int count = 0;
-
 			//checks for data to be success
 			Boolean success = (Boolean)jsonObj.get("success");
 			System.out.println("Data success: " + success);
@@ -134,8 +132,11 @@ public class StateTransitionGraph {
 				dataArray = (JSONArray)jsonObj.get("data");
 				dataSize = dataArray.size();
 
-				JSONObject dataObj;
+				JSONObject dataObj = new JSONObject();
 				JSONArray inputSpeciesArray;
+				
+				JSONArray nodes = new JSONArray();
+				JSONArray edges = new JSONArray();
 
 				String inputSpecies, expression, answer, oldAnswer = "";
 
@@ -144,16 +145,14 @@ public class StateTransitionGraph {
 				expressionString = new ArrayList<String>(Collections.
 						nCopies(dataSize, "0"));
 
-
-				//all possible 2^n states
 				for (int i = 0; i < Math.pow(2, totalSize); i++) {
 
 					String state = generateBinary(i);
+					
+					dataObj.put("id", state);
+					nodes.add(dataObj);
 
-					count++;
 					answer = "";
-
-					System.out.print(state + " => ");
 
 					for (int j = 0; j < dataSize; j++) {
 
@@ -169,7 +168,7 @@ public class StateTransitionGraph {
 
 							inputSpecies = (String)inputSpeciesArray.get(k);
 
-							int index = totalSpecies.indexOf(inputSpecies);
+							int index = components.indexOf(inputSpecies);
 
 							expression = expression.replace(inputSpecies,
 									state.charAt(index) + "");
@@ -188,13 +187,23 @@ public class StateTransitionGraph {
 					answer = answer.concat(state.substring(dataSize));
 					oldAnswer = answer;
 
-					System.out.println(answer);
+					transitions.put(state, answer);
+					
+					dataObj.put("source", state);
+					dataObj.put("target", answer);
+					edges.add(dataObj);
 				}
-				System.out.println();
 
-				System.out.println("Total number of states: " + count);
+				transitionStates.put("transitions", transitions);
+				
 				long endTime = System.currentTimeMillis();
-				System.out.println("It took " + (endTime - startTime) + " milliseconds");
+			
+				
+				/*Prints required data*/
+				PrintData printObj = new PrintData();
+				printObj.printTime(startTime, endTime);
+				printObj.printSpecies(transitionStates);
+				printObj.printStates(transitionStates);
 			}
 			else{
 				System.out.println("Data success: false");
