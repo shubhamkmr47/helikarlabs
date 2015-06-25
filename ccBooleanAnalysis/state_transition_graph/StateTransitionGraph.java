@@ -42,6 +42,7 @@ public class StateTransitionGraph {
 
 			if(!components.contains(species)){
 				components.add(species);
+				
 			}
 		}
 
@@ -60,7 +61,10 @@ public class StateTransitionGraph {
 			}
 		}
 		transitionStates.put("components", components);
-		graph.put("metadata", components);
+		
+		JSONObject temp = new JSONObject();
+		temp.put("components", components);
+		graph.put("metadata", temp);
 		totalSize = components.size();
 	}
 
@@ -133,6 +137,8 @@ public class StateTransitionGraph {
 				dataSize = dataArray.size();
 
 				JSONObject dataObj = new JSONObject();
+				JSONObject tempObj = new JSONObject();
+				JSONObject tempObj1 = new JSONObject();
 				JSONArray inputSpeciesArray;
 				
 				JSONArray nodes = new JSONArray();
@@ -149,8 +155,9 @@ public class StateTransitionGraph {
 
 					String state = generateBinary(i);
 					
-					dataObj.put("id", state);
-					nodes.add(dataObj);
+					tempObj1.put("id", state);
+					nodes.add(tempObj1);
+					
 
 					answer = "";
 
@@ -189,16 +196,17 @@ public class StateTransitionGraph {
 
 					transitions.put(state, answer);
 					
-					dataObj.put("source", state);
-					dataObj.put("target", answer);
-					edges.add(dataObj);
+					tempObj.put("source", state);
+					tempObj.put("target", answer);
+					edges.add(tempObj);
+					
 				}
-
+				graph.put("nodes", nodes);
+				graph.put("edges", edges);
 				transitionStates.put("transitions", transitions);
 				
 				long endTime = System.currentTimeMillis();
 			
-				
 				/*Prints required data*/
 				PrintData printObj = new PrintData();
 				printObj.printTime(startTime, endTime);
