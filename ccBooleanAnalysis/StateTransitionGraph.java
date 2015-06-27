@@ -94,6 +94,12 @@ public class StateTransitionGraph {
 		else
 			return Character.getNumericValue(result.charAt(0));
 	}
+	
+	private static void attractorAnalysis(){
+		
+		AttractorAnalysis attObj = new AttractorAnalysis();
+		attObj.attractorAnalysis(transitions);
+	}
 
 
 	@SuppressWarnings("unchecked")
@@ -145,7 +151,7 @@ public class StateTransitionGraph {
 				JSONArray edges = new JSONArray();
 
 				String inputSpecies, expression, answer, oldAnswer = "";
-
+				
 				initializeSpecies();
 
 				expressionString = new ArrayList<String>(Collections.
@@ -207,11 +213,21 @@ public class StateTransitionGraph {
 				
 				long endTime = System.currentTimeMillis();
 			
-				/*Prints required data*/
+				/*Prints required data
 				PrintData printObj = new PrintData();
 				printObj.printTime(startTime, endTime);
 				printObj.printSpecies(transitionStates);
 				printObj.printStates(transitionStates);
+				*/
+				
+				/*transitions = new JSONObject();
+				transitions.put("000", "001");
+				transitions.put("001", "010");
+				transitions.put("010", "011");
+				transitions.put("011", "100");
+				transitions.put("100", "001");*/
+				
+				attractorAnalysis();
 			}
 			else{
 				System.out.println("Data success: false");
