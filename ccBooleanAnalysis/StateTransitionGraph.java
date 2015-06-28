@@ -213,12 +213,12 @@ public class StateTransitionGraph {
 				
 				long endTime = System.currentTimeMillis();
 			
-				/*Prints required data
+				/*Prints required data*/
 				PrintData printObj = new PrintData();
 				printObj.printTime(startTime, endTime);
 				printObj.printSpecies(transitionStates);
 				printObj.printStates(transitionStates);
-				*/
+				
 				
 				/*transitions = new JSONObject();
 				transitions.put("000", "001");

@@ -27,6 +27,7 @@ public class AttractorAnalysis {
 		graph = (JSONObject) transitions;
 
 		visitObj = (JSONObject) graph.clone();
+		System.out.println();
 
 		for(Iterator<?> iterator = graph.keySet().iterator();
 				iterator.hasNext();){
@@ -35,16 +36,7 @@ public class AttractorAnalysis {
 			target = (String) graph.get(source);
 			visit = (String) visitObj.get(source);
 
-
-			/*System.out.println("\niterator: " + source + " " + target 
-					+ " " + visit);
-			 */
 			target = pushStack(source);
-
-			/*System.out.print("Stack: ");
-			for (int i = 0; i < stack.size(); i++) {
-				System.out.print(stack.get(i) + " ");
-			}*/
 
 			if(stack.contains(target))
 				popStack(target); 
@@ -75,23 +67,18 @@ public class AttractorAnalysis {
 		tempString = stack.pop();
 		attractors.add(tempString);
 		steadyStates.add(tempString);
-
+		
 		System.out.println("Attractors: " + attractors);
 		attractors.clear();
-
 	}
 
 	private String pushStack(String node){
 
 		String visit = (String) visitObj.get(node);
 
-
-
 		while(visit.length() > 1){
 
 			stack.push(node);
-			//System.out.println("Push: " + node);
-
 			visitObj.put(node, "1");
 			node = (String) graph.get(node);
 			visit = (String) visitObj.get(node);
