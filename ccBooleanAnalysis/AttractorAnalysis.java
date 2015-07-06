@@ -19,7 +19,7 @@ public class AttractorAnalysis {
 	public void attractorAnalysis(JSONObject transitions) {
 		// TODO Auto-generated method stub
 
-		String source, target, visit;
+		String source, target;
 
 		//time of computation in milliseconds
 		long startTime = System.currentTimeMillis();
@@ -27,26 +27,24 @@ public class AttractorAnalysis {
 		graph = (JSONObject) transitions;
 
 		visitObj = (JSONObject) graph.clone();
-		System.out.println();
+		//System.out.println();
 
 		for(Iterator<?> iterator = graph.keySet().iterator();
 				iterator.hasNext();){
 
 			source = (String)iterator.next();
 			target = (String) graph.get(source);
-			visit = (String) visitObj.get(source);
-
 			target = pushStack(source);
 
 			if(stack.contains(target))
 				popStack(target); 
 			stack.removeAllElements();
 		}
-		System.out.println("Steady States: " + steadyStates);
+		//System.out.println("Steady States: " + steadyStates);
 
 		long endTime = System.currentTimeMillis();
 
-		System.out.println("Time taken (if state transitions are known): " + (endTime - startTime) + " milliseconds");
+		//System.out.println("Time taken (if state transitions are known): " + (endTime - startTime) + " milliseconds");
 	}
 
 	private void popStack(String node) {
@@ -68,10 +66,11 @@ public class AttractorAnalysis {
 		attractors.add(tempString);
 		steadyStates.add(tempString);
 		
-		System.out.println("Attractors: " + attractors);
+		//System.out.println("Attractors: " + attractors);
 		attractors.clear();
 	}
 
+	@SuppressWarnings("unchecked")
 	private String pushStack(String node){
 
 		String visit = (String) visitObj.get(node);

@@ -1,32 +1,29 @@
 package ccBooleanAnalysis;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.swing.JFileChooser;
+import javax.script.ScriptException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 public class StateTransitionGraph {
-	
+
 	private static JSONObject transitionStates = new JSONObject();
 	private static JSONObject graph = new JSONObject();
 
 	private static JSONArray components = new JSONArray();
 	private static JSONObject transitions = new JSONObject();
-	
+
 	private static ArrayList<String> expressionString = new ArrayList<String>();
 	private static JSONArray dataArray = new JSONArray();
 	private static int dataSize, totalSize;
-	
+
 	//total number of species including external species.
 	@SuppressWarnings("unchecked")
 	private static void initializeSpecies(){
@@ -42,7 +39,6 @@ public class StateTransitionGraph {
 
 			if(!components.contains(species)){
 				components.add(species);
-				
 			}
 		}
 
@@ -61,7 +57,7 @@ public class StateTransitionGraph {
 			}
 		}
 		transitionStates.put("components", components);
-		
+
 		JSONObject temp = new JSONObject();
 		temp.put("components", components);
 		graph.put("metadata", temp);
@@ -94,26 +90,17 @@ public class StateTransitionGraph {
 		else
 			return Character.getNumericValue(result.charAt(0));
 	}
-	
-	private static void attractorAnalysis(){
-		
-		AttractorAnalysis attObj = new AttractorAnalysis();
-		attObj.attractorAnalysis(transitions);
+
+	public static JSONObject getTransitions(){
+		return transitions;
 	}
 
-
 	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws FileNotFoundException {
+	public void findStateTransitionGraph(JSONObject jsonObj) throws ScriptException, FileNotFoundException{
 		// TODO Auto-generated method stub
 
-		JFileChooser fileChooser = new JFileChooser();
-
-		// This assumes user pressed Open
-		@SuppressWarnings("unused")
-		int result = fileChooser.showOpenDialog(null);
-
-		// Get the file from the file 
-		File file = fileChooser.getSelectedFile();
+		//time of computation in milliseconds
+		long startTime = System.currentTimeMillis();
 
 		//solves boolean expression
 		ScriptEngineManager factory = new ScriptEngineManager();
@@ -123,118 +110,120 @@ public class StateTransitionGraph {
 		engine.put("1", true);
 		engine.put("0", false);
 
-		JSONParser parser = new JSONParser(); 
+		//checks for data to be success
+		Boolean success = (Boolean)jsonObj.get("success");
+		System.out.println("Data success: " + success);
 
-		// Open the file
-		try {
-			Object obj = parser.parse(new FileReader(file));
-			JSONObject jsonObj = (JSONObject)obj;
+		if(success.booleanValue() == true){
 
-			//time of computation in milliseconds
-			long startTime = System.currentTimeMillis();
+			//number of input species
+			dataArray = (JSONArray)jsonObj.get("data");
+			dataSize = dataArray.size();
 
-			//checks for data to be success
-			Boolean success = (Boolean)jsonObj.get("success");
-			System.out.println("Data success: " + success);
+			JSONObject dataObj = new JSONObject();
+			JSONObject tempObj = new JSONObject();
+			JSONObject tempObj1 = new JSONObject();
+			JSONArray inputSpeciesArray;
 
-			if(success.booleanValue() == true){
-				//number of input species
-				dataArray = (JSONArray)jsonObj.get("data");
-				dataSize = dataArray.size();
+			JSONArray nodes = new JSONArray();
+			JSONArray edges = new JSONArray();
 
-				JSONObject dataObj = new JSONObject();
-				JSONObject tempObj = new JSONObject();
-				JSONObject tempObj1 = new JSONObject();
-				JSONArray inputSpeciesArray;
-				
-				JSONArray nodes = new JSONArray();
-				JSONArray edges = new JSONArray();
+			String inputSpecies, expression, answer, oldAnswer = "";
 
-				String inputSpecies, expression, answer, oldAnswer = "";
-				
-				initializeSpecies();
+			initializeSpecies();
 
-				expressionString = new ArrayList<String>(Collections.
-						nCopies(dataSize, "0"));
+			expressionString = new ArrayList<String>(Collections.
+					nCopies(dataSize, "0"));
 
-				for (int i = 0; i < Math.pow(2, totalSize); i++) {
+			for (int i = 0; i < Math.pow(2, totalSize); i++) {
 
-					String state = generateBinary(i);
-					
-					tempObj1.put("id", state);
-					nodes.add(tempObj1);
-					
+				String state = generateBinary(i);
 
-					answer = "";
+				tempObj1.put("id", state);
+				nodes.add(tempObj1);
 
-					for (int j = 0; j < dataSize; j++) {
 
-						dataObj = (JSONObject)dataArray.get(j);
+				answer = "";
 
-						inputSpeciesArray = (JSONArray)dataObj.get("inputSpecies");
+				for (int j = 0; j < dataSize; j++) {
 
-						expression = (String) dataObj.get("expression");
-						expression = expression.replaceAll("\\s","");
+					dataObj = (JSONObject)dataArray.get(j);
 
-						//evaluate boolean expression
-						for (int k = 0; k < inputSpeciesArray.size(); k++) {
+					inputSpeciesArray = (JSONArray)dataObj.get("inputSpecies");
 
-							inputSpecies = (String)inputSpeciesArray.get(k);
+					expression = (String) dataObj.get("expression");
+					expression = expression.replaceAll("\\s","");
 
-							int index = components.indexOf(inputSpecies);
+					//evaluate boolean expression
+					for (int k = 0; k < inputSpeciesArray.size(); k++) {
 
-							expression = expression.replace(inputSpecies,
-									state.charAt(index) + "");
-						}
+						inputSpecies = (String)inputSpeciesArray.get(k);
 
-						if(expressionString.get(j).equals(expression)){
-							answer = answer.concat(oldAnswer.charAt(j) + "");						
-						}
-						else{
-							expressionString.set(j, expression);
-							String evaluate = engine.eval(expression).toString();
-							answer = answer.concat(Integer.toString(format(evaluate)));
-						}
+						int index = components.indexOf(inputSpecies);
+
+						expression = expression.replace(inputSpecies,
+								state.charAt(index) + "");
 					}
 
-					answer = answer.concat(state.substring(dataSize));
-					oldAnswer = answer;
-
-					transitions.put(state, answer);
-					
-					tempObj.put("source", state);
-					tempObj.put("target", answer);
-					edges.add(tempObj);
-					
+					if(expressionString.get(j).equals(expression)){
+						answer = answer.concat(oldAnswer.charAt(j) + "");						
+					}
+					else{
+						expressionString.set(j, expression);
+						String evaluate = engine.eval(expression).toString();
+						answer = answer.concat(Integer.toString(format(evaluate)));
+					}
 				}
-				graph.put("nodes", nodes);
-				graph.put("edges", edges);
-				transitionStates.put("transitions", transitions);
-				
-				long endTime = System.currentTimeMillis();
-			
-				/*Prints required data*/
-				PrintData printObj = new PrintData();
-				printObj.printTime(startTime, endTime);
-				printObj.printSpecies(transitionStates);
-				printObj.printStates(transitionStates);
-				
-				
-				/*transitions = new JSONObject();
-				transitions.put("000", "001");
-				transitions.put("001", "010");
-				transitions.put("010", "011");
-				transitions.put("011", "100");
-				transitions.put("100", "001");*/
-				
-				attractorAnalysis();
-			}
-			else{
-				System.out.println("Data success: false");
-			}
 
-		} catch (Exception e) {
-			// TODO: handle exception
+				answer = answer.concat(state.substring(dataSize));
+				oldAnswer = answer;
+
+				transitions.put(state, answer);
+
+				tempObj.put("source", state);
+				tempObj.put("target", answer);
+				edges.add(tempObj);
+
+			}
+			graph.put("nodes", nodes);
+			graph.put("edges", edges);
+			transitionStates.put("transitions", transitions);
+
+			long endTime = System.currentTimeMillis();
+
+			/*printTime(startTime, endTime);
+			printSpecies(transitionStates);
+			printStates(transitionStates);*/
+		}
+		else{
+			System.out.println("Data success: false");
 		}
 	}
+
+	public void printSpecies(JSONObject object){
+
+		JSONArray tempArray;
+		tempArray = (JSONArray) object.get("components");
+		System.out.println("Total species: " + tempArray.size());
+		System.out.println("Species: " + tempArray);
+	}
+
+	public void printStates(JSONObject object){
+
+		JSONObject tempObj = new JSONObject();
+		tempObj = (JSONObject) object.get("transitions");
+
+		String state;
+		System.out.println("Total states: " + tempObj.size());
+
+		for (int i = 0; i < tempObj.size(); i++) {
+			state = generateBinary(i);
+			System.out.println(state + " " + tempObj.get(state));
+		}
+	}
+
+	public void printTime(long start, long end){
+		System.out.println("Time taken: " + (end - start) + " milliseconds");
+	}
+
 }
