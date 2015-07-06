@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 
 public class AverageConnectivity {
 
-	public void getAverageConnectivity(JSONArray dataArray){
+	public void getAverageConnectivity(JSONArray dataArray, JSONArray components){
 
 		//time of computation in milliseconds
 		long startTime = System.currentTimeMillis();
@@ -31,7 +31,13 @@ public class AverageConnectivity {
 			System.out.println("Specie: " + species + " = " + size);
 		}
 		
-		average = average/dataArray.size();
+		for (int j = dataArray.size(); j < components.size(); j++) {
+			
+			species = (String) components.get(j);
+			System.out.println("Specie: " + species + " = " + 0);
+		}
+		
+		average = average/components.size();
 		
 		long endTime = System.currentTimeMillis();
 		

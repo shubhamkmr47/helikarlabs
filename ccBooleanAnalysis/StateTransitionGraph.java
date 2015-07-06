@@ -191,6 +191,7 @@ public class StateTransitionGraph {
 
 			long endTime = System.currentTimeMillis();
 
+			System.out.println(components);
 			/*printTime(startTime, endTime);
 			printSpecies(transitionStates);
 			printStates(transitionStates);*/
@@ -200,7 +201,7 @@ public class StateTransitionGraph {
 		}
 	}
 
-	public void printSpecies(JSONObject object){
+	private static void printSpecies(JSONObject object){
 
 		JSONArray tempArray;
 		tempArray = (JSONArray) object.get("components");
@@ -208,7 +209,7 @@ public class StateTransitionGraph {
 		System.out.println("Species: " + tempArray);
 	}
 
-	public void printStates(JSONObject object){
+	private static void printStates(JSONObject object){
 
 		JSONObject tempObj = new JSONObject();
 		tempObj = (JSONObject) object.get("transitions");
@@ -222,8 +223,13 @@ public class StateTransitionGraph {
 		}
 	}
 
-	public void printTime(long start, long end){
+	private static void printTime(long start, long end){
 		System.out.println("Time taken: " + (end - start) + " milliseconds");
+	}
+	
+	public JSONArray getComponents(){
+		
+		return components;
 	}
 
 }

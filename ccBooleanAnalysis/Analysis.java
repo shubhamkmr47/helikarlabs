@@ -41,7 +41,7 @@ public class Analysis {
 		PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
 		System.setOut(out);
 
-		//stateTransitionAnalysis();
+		stateTransitionAnalysis();
 		//attractorStateAnalysis();
 		averageConnectivity();
 	}
@@ -72,7 +72,8 @@ public class Analysis {
 		
 		JSONObject obj = getFileObj();
 		dataArray = (JSONArray) obj.get("data");
-		avgConObj.getAverageConnectivity(dataArray);
+		JSONArray components = stgObj.getComponents();
+		avgConObj.getAverageConnectivity(dataArray, components);
 		
 	}
 }
