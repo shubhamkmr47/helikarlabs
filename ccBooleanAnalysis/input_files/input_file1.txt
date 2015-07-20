@@ -1,7 +1,0 @@
-{"success":true,"data":[
-
-{"species":"ci","inputSpecies":["EN_protein"],"expression":"! ( ( EN_protein ) )"},
-
-{"species":"CI_protein","inputSpecies":["ci"],"expression":"( ci ) "},
-
-{"species":"WG_protein","inputSpecies":["wg"],"expression":"( wg ) "}]}
