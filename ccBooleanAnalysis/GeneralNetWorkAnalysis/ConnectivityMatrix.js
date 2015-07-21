@@ -1,11 +1,6 @@
-var data = input_data1.nodes;
-var connection = input_data1.edges;
-var conMatrix = [];
-var nodes = [];
-
 function getMatrix(){
-
-	getNodes();
+	
+	var conMatrix = [];
 
 	for (i in connection){
 		//document.write(connection[i].source.label + " = " + connection[i].target.label + "<br>");
@@ -16,31 +11,13 @@ function getMatrix(){
 
 		conMatrix.push(edge);
 	}
+	
+	return conMatrix;
+}
 
-	document.write("<br> <b>Connectivity Matrix: </b>");
+function getIndex(specie){
 
-	for (i in conMatrix){
+	var index = nodes.indexOf(specie);
+	return index;
+}
 
-		source_index = getIndex(conMatrix[i].source);
-		target_index = getIndex(conMatrix[i].target);
-		document.write("(" + conMatrix[i].source + ", " + conMatrix[i].target + "), ");	
-	}
-
-	function getIndex(specie){
-
-		var index = nodes.indexOf(specie);
-		return index;
-	}
-};
-
-function getNodes(){
-
-	for (i in data){
-		//document.write("Label: " + data[i].label + "<br>");
-		nodes.push(data[i].label);
-	}
-
-	document.write("<b>" +"Nodes order: " + "</b>" + nodes.toString() + "<br>");
-};
-
-getMatrix();

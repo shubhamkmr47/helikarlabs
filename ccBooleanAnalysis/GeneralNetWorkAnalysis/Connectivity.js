@@ -1,30 +1,27 @@
-var inDegree;
-
 function getConnectivity(){
+	
+	var inDegree;
+	var conMatrix = getMatrix();
+	
 	if(conMatrix.length == 0){
 		getMatrix();
 	}
 	
-	document.write("<br><br> <b> Connectivity </b>");
+	var len = nodes.length;
 	
-	initInDegree(nodes.length);
+	inDegree = new Array(len);
+	while (--len >= 0) {
+		inDegree[len] = 0;
+	}
+	
 	
 	for (i in conMatrix){
 		
-		var source = conMatrix[i].source;
 		var target = conMatrix[i].target;
 		
 		inDegree[target]++;
 	}
 	
-	document.write(inDegree);
+	return inDegree;
 }
 
-function initInDegree(length){
-	
-	inDegree = new Array(length);
-	while (--length >= 0) {
-		inDegree[length] = 0;
-	}	
-}
- getConnectivity();

@@ -3,9 +3,35 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Connectivity Matrix</title>
+		
 		<script type="text/javascript" src="Resource.js"></script>
+		<script type="text/javascript" src="Initialize.js"></script>
 		<script type="text/javascript" src="ConnectivityMatrix.js"></script>
 		<script type="text/javascript" src="Connectivity.js"></script>
+		
+		<script type="text/javascript">
+		
+		//Initializa data and variables
+		initData(input_data.nodes, input_data.edges);
+		
+		
+		
+		
+		//conMatrix contains the connectivity matrix and is global
+		var conMatrix = getMatrix();
+		
+		document.write("<br> <b>Connectivity Matrix: </b>");
+		for (i in conMatrix)
+			document.write("(" + conMatrix[i].source + ", " + conMatrix[i].target + "), ");	
+		
+		
+		
+		
+		//inDegree contains connectivity and is global
+		var connectivity = getConnectivity();
+		document.write("<br><br> <b> Connectivity: </b>" + connectivity);
+		
+		</script>
 		
 		
 	</head>
