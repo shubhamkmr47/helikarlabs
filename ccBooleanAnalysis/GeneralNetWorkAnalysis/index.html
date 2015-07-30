@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="Initialize.js"></script>
 		<script type="text/javascript" src="ConnectivityMatrix.js"></script>
 		<script type="text/javascript" src="Connectivity.js"></script>
+		<script type="text/javascript" src="PathLength.js"></script>
 		
 		<script type="text/javascript">
 		
@@ -15,24 +16,23 @@
 		initData(input_data.nodes, input_data.edges);
 		
 		
-		
-		
 		//conMatrix contains the connectivity matrix and is global
-		var conMatrix = getMatrix();
-		
+		var conMatrix = getMatrix();		
 		document.write("<br> <b>Connectivity Matrix: </b>");
 		for (i in conMatrix)
 			document.write("(" + conMatrix[i].source + ", " + conMatrix[i].target + "), ");	
 		
 		
-		
-		
 		//inDegree contains connectivity and is global
 		var connectivity = getConnectivity();
-		document.write("<br><br> <b> Connectivity: </b>" + connectivity);
+		document.write("<br><br> <b> Connectivity: </b>" + connectivity + "<br>");
+		
+		var source = "Cdc20Cdc14", target = "MBF";
+		var distance = getPath(source, target);
+		distance = 1;
+		document.write("distance between " + source + " and " + target + " is " + distance + "<br>" );
 		
 		</script>
-		
 		
 	</head>
 	
